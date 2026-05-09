@@ -1,0 +1,55 @@
+{
+	"name": "catalogo_departamentos",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalake_vacunas",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "bronze"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "catalogo_departamentos.csv",
+				"fileSystem": "bronze"
+			},
+			"columnDelimiter": ";",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "municipio_id",
+				"type": "String"
+			},
+			{
+				"name": "municipio_nombre",
+				"type": "String"
+			},
+			{
+				"name": "departamento",
+				"type": "String"
+			},
+			{
+				"name": "codigo_departamento",
+				"type": "String"
+			},
+			{
+				"name": "zona_geografica",
+				"type": "String"
+			},
+			{
+				"name": "es_capital_departamental",
+				"type": "String"
+			},
+			{
+				"name": "poblacion_depto_estimada",
+				"type": "String"
+			}
+		]
+	}
+}

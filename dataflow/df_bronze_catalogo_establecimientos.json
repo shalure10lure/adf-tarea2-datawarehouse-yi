@@ -1,0 +1,141 @@
+{
+	"name": "df_bronze_catalogo_establecimientos",
+	"properties": {
+		"folder": {
+			"name": "bronze"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "catalogo_establecimientos_csv",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "silver_establecimientos",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          establecimiento_id as string,",
+				"          nombre_establecimiento as string,",
+				"          tipo_establecimiento as string,",
+				"          nivel_atencion as string,",
+				"          zona as string,",
+				"          sedes as string,",
+				"          red_salud as string,",
+				"          departamento as string,",
+				"          municipio as string,",
+				"          latitud as string,",
+				"          longitud as string,",
+				"          tiene_cadena_frio as string,",
+				"          activo as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 derive(establecimiento_id = trim(establecimiento_id),",
+				"          nombre_establecimiento = trim(nombre_establecimiento),",
+				"          tipo_establecimiento = trim(tipo_establecimiento),",
+				"          nivel_atencion = trim(nivel_atencion),",
+				"          zona = trim(zona),",
+				"          sedes = trim(sedes),",
+				"          red_salud = trim(red_salud),",
+				"          departamento = trim(departamento),",
+				"          municipio = trim(municipio),",
+				"          latitud = trim(latitud),",
+				"          longitud = trim(longitud),",
+				"          tiene_cadena_frio = trim(tiene_cadena_frio),",
+				"          activo = trim(activo)) ~> derivedColumn1",
+				"derivedColumn1 derive(establecimiento_id = upper(establecimiento_id),",
+				"          tiene_cadena_frio = toBoolean(tiene_cadena_frio),",
+				"          activo = toBoolean(activo),",
+				"          nivel_atencion = toInteger(nivel_atencion),",
+				"          latitud = toDecimal(\r",
+				"    concat(\r",
+				"        substring(replace(latitud,'.',''),1,3),\r",
+				"        '.',\r",
+				"        substring(replace(latitud,'.',''),4)\r",
+				"    ),\r",
+				"12,\r",
+				"6\r",
+				"),",
+				"          longitud = iif(\r",
+				"    size(split(longitud, '\\\\.')) > 2,\r",
+				"\r",
+				"    toDecimal(\r",
+				"        regexReplace(longitud, '\\\\.(?=[^.]*$)', ''),\r",
+				"    12,6),\r",
+				"\r",
+				"    toDecimal(\r",
+				"        concat(\r",
+				"            substring(replace(longitud,'.',''),1,\r",
+				"                length(replace(longitud,'.',''))-6\r",
+				"            ),\r",
+				"            '.',\r",
+				"            right(replace(longitud,'.',''),6)\r",
+				"        ),\r",
+				"    12,6)\r",
+				")) ~> derivedColumn2",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          establecimiento_id as string,",
+				"          nombre_establecimiento as string,",
+				"          tipo_establecimiento as string,",
+				"          nivel_atencion as integer,",
+				"          zona as string,",
+				"          sedes as string,",
+				"          red_salud as string,",
+				"          departamento as string,",
+				"          municipio as string,",
+				"          latitud as decimal(12,8),",
+				"          longitud as decimal(12,8),",
+				"          tiene_cadena_frio as boolean,",
+				"          activo as boolean",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          establecimiento_id,",
+				"          nombre_establecimiento,",
+				"          tipo_establecimiento,",
+				"          nivel_atencion,",
+				"          zona,",
+				"          sedes,",
+				"          red_salud,",
+				"          departamento,",
+				"          municipio,",
+				"          latitud,",
+				"          longitud,",
+				"          tiene_cadena_frio,",
+				"          activo",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
