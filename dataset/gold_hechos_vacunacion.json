@@ -1,0 +1,94 @@
+{
+	"name": "gold_hechos_vacunacion",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "dw_vacunas",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "gold"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "vacunacion_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "fecha_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "paciente_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "vacuna_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "establecimiento_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "numero_dosis",
+				"type": "decimal",
+				"precision": 4,
+				"scale": 1
+			},
+			{
+				"name": "temperatura_conservacion",
+				"type": "decimal",
+				"precision": 4,
+				"scale": 1
+			},
+			{
+				"name": "edad_dias_aplicacion",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "aplicacion_oportuna",
+				"type": "bit"
+			},
+			{
+				"name": "latitud",
+				"type": "decimal",
+				"precision": 12,
+				"scale": 8
+			},
+			{
+				"name": "longitud",
+				"type": "decimal",
+				"precision": 12,
+				"scale": 8
+			},
+			{
+				"name": "origen_datos",
+				"type": "varchar"
+			},
+			{
+				"name": "lote_vacuna",
+				"type": "varchar"
+			},
+			{
+				"name": "observaciones",
+				"type": "varchar"
+			},
+			{
+				"name": "registro_id",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "gold",
+			"table": "hechos_vacunacion"
+		}
+	}
+}
