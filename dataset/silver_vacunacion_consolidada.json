@@ -37,22 +37,18 @@
 			},
 			{
 				"name": "sexo",
-				"type": "varchar"
+				"type": "char"
 			},
 			{
 				"name": "fecha_nacimiento",
 				"type": "date"
 			},
 			{
-				"name": "departamento",
+				"name": "municipio_nombre",
 				"type": "varchar"
 			},
 			{
-				"name": "municipio",
-				"type": "varchar"
-			},
-			{
-				"name": "comunidad",
+				"name": "municipio_id",
 				"type": "varchar"
 			},
 			{
@@ -61,7 +57,9 @@
 			},
 			{
 				"name": "fecha_vacunacion",
-				"type": "date"
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
 			},
 			{
 				"name": "vacuna_id",
@@ -81,7 +79,11 @@
 				"type": "varchar"
 			},
 			{
-				"name": "nombre_establecimiento",
+				"name": "establecimiento_nombre",
+				"type": "varchar"
+			},
+			{
+				"name": "departamento",
 				"type": "varchar"
 			},
 			{
@@ -91,17 +93,13 @@
 			{
 				"name": "temperatura_conservacion",
 				"type": "decimal",
-				"precision": 4,
-				"scale": 1
+				"precision": 5,
+				"scale": 2
 			},
 			{
 				"name": "edad_dias_aplicacion",
 				"type": "int",
 				"precision": 10
-			},
-			{
-				"name": "aplicacion_oportuna",
-				"type": "bit"
 			},
 			{
 				"name": "via_administracion",
@@ -120,8 +118,16 @@
 				"scale": 8
 			},
 			{
+				"name": "observaciones",
+				"type": "varchar"
+			},
+			{
 				"name": "origen_datos",
 				"type": "varchar"
+			},
+			{
+				"name": "aplicacion_oportuna",
+				"type": "bit"
 			},
 			{
 				"name": "fecha_carga",
