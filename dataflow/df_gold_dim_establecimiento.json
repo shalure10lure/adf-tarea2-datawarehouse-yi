@@ -1,0 +1,68 @@
+{
+	"name": "df_gold_dim_establecimiento",
+	"properties": {
+		"folder": {
+			"name": "gold"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "silver_vacunacion_consolidada",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "gold_dim_establecimiento",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          establecimiento_id as string,",
+				"          nombre_establecimiento as string,",
+				"          departamento as string,",
+				"          municipio as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT DISTINCT\\n    establecimiento_id,\\n    establecimiento_nombre AS nombre_establecimiento,\\n    departamento,\\n    municipio_nombre AS municipio\\nFROM silver.vacunacion_consolidada\\nWHERE establecimiento_id IS NOT NULL',",
+				"     format: 'query') ~> source1",
+				"source1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          establecimiento_key as integer,",
+				"          establecimiento_id as string,",
+				"          nombre_establecimiento as string,",
+				"          tipo_establecimiento as string,",
+				"          departamento as string,",
+				"          municipio as string,",
+				"          red_salud as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          establecimiento_id,",
+				"          nombre_establecimiento,",
+				"          departamento,",
+				"          municipio",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
