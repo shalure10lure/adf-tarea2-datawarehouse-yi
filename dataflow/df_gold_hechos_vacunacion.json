@@ -1,0 +1,247 @@
+{
+	"name": "df_gold_hechos_vacunacion",
+	"properties": {
+		"folder": {
+			"name": "gold"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "silver_vacunacion_consolidada",
+						"type": "DatasetReference"
+					},
+					"name": "vacunacionconsolidada"
+				},
+				{
+					"dataset": {
+						"referenceName": "gold_dim_establecimiento",
+						"type": "DatasetReference"
+					},
+					"name": "dimestablecimiento"
+				},
+				{
+					"dataset": {
+						"referenceName": "gold_dim_paciente",
+						"type": "DatasetReference"
+					},
+					"name": "dimpaciente"
+				},
+				{
+					"dataset": {
+						"referenceName": "gold_dim_vacuna",
+						"type": "DatasetReference"
+					},
+					"name": "dimvacuna"
+				},
+				{
+					"dataset": {
+						"referenceName": "gold_dim_tiempo",
+						"type": "DatasetReference"
+					},
+					"name": "dimtiempo"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "gold_hechos_vacunacion",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "lookup2"
+				},
+				{
+					"name": "lookup3"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "lookup4"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          registro_id as string,",
+				"          paciente_id as string,",
+				"          documento_identidad as string,",
+				"          nombres as string,",
+				"          apellido_paterno as string,",
+				"          apellido_materno as string,",
+				"          sexo as string,",
+				"          fecha_nacimiento as date,",
+				"          municipio_nombre as string,",
+				"          municipio_id as string,",
+				"          pueblo_indigena as boolean,",
+				"          fecha_vacunacion as timestamp,",
+				"          vacuna_id as string,",
+				"          vacuna_nombre as string,",
+				"          numero_dosis as integer,",
+				"          establecimiento_id as string,",
+				"          establecimiento_nombre as string,",
+				"          departamento as string,",
+				"          lote_vacuna as string,",
+				"          temperatura_conservacion as decimal(5,2),",
+				"          edad_dias_aplicacion as integer,",
+				"          via_administracion as string,",
+				"          latitud as decimal(12,8),",
+				"          longitud as decimal(12,8),",
+				"          observaciones as string,",
+				"          origen_datos as string,",
+				"          aplicacion_oportuna as boolean,",
+				"          fecha_carga as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> vacunacionconsolidada",
+				"source(output(",
+				"          establecimiento_key as integer,",
+				"          establecimiento_id as string,",
+				"          nombre_establecimiento as string,",
+				"          tipo_establecimiento as string,",
+				"          departamento as string,",
+				"          municipio as string,",
+				"          red_salud as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> dimestablecimiento",
+				"source(output(",
+				"          paciente_key as integer,",
+				"          paciente_id as string,",
+				"          documento_identidad as string,",
+				"          nombres as string,",
+				"          apellido_paterno as string,",
+				"          apellido_materno as string,",
+				"          sexo as string,",
+				"          fecha_nacimiento as date,",
+				"          pueblo_indigena as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> dimpaciente",
+				"source(output(",
+				"          vacuna_key as integer,",
+				"          vacuna_id as string,",
+				"          vacuna_nombre as string,",
+				"          enfermedad_previene as string,",
+				"          grupo_pai as string,",
+				"          via_administracion as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> dimvacuna",
+				"source(output(",
+				"          fecha_key as integer,",
+				"          fecha as date,",
+				"          dia_semana as integer,",
+				"          nombre_dia as string,",
+				"          dia_mes as integer,",
+				"          mes as integer,",
+				"          nombre_mes as string,",
+				"          trimestre as integer,",
+				"          anio as integer,",
+				"          es_fin_semana as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> dimtiempo",
+				"vacunacionconsolidada, dimestablecimiento lookup(vacunacionconsolidada@establecimiento_id == dimestablecimiento@establecimiento_id,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1, dimpaciente lookup(vacunacionconsolidada@paciente_id == dimpaciente@paciente_id,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup2",
+				"lookup2, dimvacuna lookup(vacunacionconsolidada@vacuna_id == dimvacuna@vacuna_id,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup3",
+				"lookup3 derive(fecha_vacunacion = toDate(fecha_vacunacion)) ~> derivedColumn1",
+				"derivedColumn1, dimtiempo lookup(fecha_vacunacion == fecha,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup4",
+				"lookup4 select(mapColumn(",
+				"          registro_id,",
+				"          numero_dosis,",
+				"          lote_vacuna,",
+				"          temperatura_conservacion,",
+				"          edad_dias_aplicacion,",
+				"          latitud,",
+				"          longitud,",
+				"          observaciones,",
+				"          origen_datos,",
+				"          aplicacion_oportuna,",
+				"          establecimiento_key,",
+				"          paciente_key,",
+				"          vacuna_key,",
+				"          fecha_key",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          vacunacion_key as integer,",
+				"          fecha_key as integer,",
+				"          paciente_key as integer,",
+				"          vacuna_key as integer,",
+				"          establecimiento_key as integer,",
+				"          numero_dosis as decimal(4,1),",
+				"          temperatura_conservacion as decimal(4,1),",
+				"          edad_dias_aplicacion as integer,",
+				"          aplicacion_oportuna as boolean,",
+				"          latitud as decimal(12,8),",
+				"          longitud as decimal(12,8),",
+				"          origen_datos as string,",
+				"          lote_vacuna as string,",
+				"          observaciones as string,",
+				"          registro_id as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          fecha_key,",
+				"          paciente_key,",
+				"          vacuna_key,",
+				"          establecimiento_key,",
+				"          numero_dosis,",
+				"          temperatura_conservacion,",
+				"          edad_dias_aplicacion,",
+				"          aplicacion_oportuna,",
+				"          latitud,",
+				"          longitud,",
+				"          origen_datos,",
+				"          lote_vacuna,",
+				"          observaciones,",
+				"          registro_id",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
